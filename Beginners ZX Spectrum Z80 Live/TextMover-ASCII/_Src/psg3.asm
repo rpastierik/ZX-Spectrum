@@ -11,12 +11,9 @@ ENTRY_POINT equ 32768
     ld (23675),hl
    
     call 3503
-
-    ; Inicializácia počiatočnej pozície
-    ld a,15             ; X súradnica
-    ld (plx),a
-    ld a,10             ; Y súradnica
-    ld (ply),a
+ 
+    ld hl,21+15*256
+    ld (plx),hl
 
     call basexy
     call splayr 
