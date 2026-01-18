@@ -7,6 +7,9 @@ ENTRY_POINT equ 32768    ; Definice vstupního bodu na adrese 32768 (0x8000)
     ld hl,ugds               ; Načítanie adresy UDG dát
     ld (23675),hl            ; Nastavenie systémovej premennej pre UDG na túto adresu
 
+    ld a, 57
+    ld (23693),a
+
     ld a,0        ; 0=black, 1=blue, 2 = red, 3=magenta, 4=green, 5=cyan, 6=yellow, 7=white
     call 8859     ; Volanie ROM rutiny na nastavenie farby obrazovky
 
@@ -53,8 +56,8 @@ setxy:                       ; Podprogram na nastavenie pozície kurzora
 xcoord  DEFB 0               ; Premenná pre X súradnicu kurzora (inicializovaná na 0)
 ycoord  DEFB 15              ; Premenná pre Y súradnicu kurzora (riadok 15)
 
-ugds    DEFB    60,126,219,153 ; Dáta pre UDG znak (8 bajtov pre 8x8 pixelov)
-        DEFB    255,255,219,219 ; Druhý riadok UDG
-
+ugds   DEFB	 60,126,219,255,189,195,126, 60
+	   DEFB	 57
+	
     end ENTRY_POINT          ; Koniec programu
     

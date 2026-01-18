@@ -28,59 +28,10 @@ loop:                        ; Hlavná slučka programu
     call setxy               ; Nastavenie pozície pre ďalší pohyb
     ld hl,xcoord             ; Načítanie adresy premennej xcoord
     dec (hl)                 ; Zníženie X súradnice o 1 (pohyb hore)
-    call print_coord         ; Výpis súradníc v ľavom hornom rohu
     ld a,(xcoord)            ; Načítanie aktuálnej X súradnice
     cp 255                   ; Porovnanie s 255 (ak prešla cez 0, skončí)
     jr nz,loop               ; Ak nie je 255, pokračuj v slučke
     ret                      ; Návrat z programu
-
-print_coord:                 ; Podprogram na výpis súradníc v ľavom hornom rohu
-    ld a,22                  ; AT kód
-    rst 16
-    ld a,0                   ; Y = 0
-    rst 16
-    ld a,0                   ; X = 0
-    rst 16
-    ld a,(xcoord)            ; Načítanie X súradnice
-    call print_byte          ; Výpis X ako čísla
-    ld a,','                 ; Čiarka
-    rst 16
-    ld a,(ycoord)            ; Načítanie Y súradnice
-    call print_byte          ; Výpis Y ako čísla
-    ret
-
-print_byte:                  ; Podprogram na výpis bajtu ako dekadického čísla
-    ld c,a                   ; Uloženie hodnoty do C
-    ld b,0                   ; Počítadlo stoviek
-hundreds:
-    ld a,c
-    cp 100
-    jr c, print_h
-    sub 100
-    ld c,a
-    inc b
-    jr hundreds
-print_h:
-    ld a,b
-    add a,'0'                ; Prevod na ASCII
-    rst 16                   ; Výpis stoviek
-    ld b,0                   ; Počítadlo desiatok
-tens:
-    ld a,c
-    cp 10
-    jr c, print_t
-    sub 10
-    ld c,a
-    inc b
-    jr tens
-print_t:
-    ld a,b
-    add a,'0'                ; Prevod na ASCII
-    rst 16                   ; Výpis desiatok
-    ld a,c
-    add a,'0'                ; Prevod jednotiek na ASCII
-    rst 16                   ; Výpis jednotiek
-    ret                      ; Návrat
 
 delay:                       ; Podprogram na oneskorenie
     ld b,10                  ; Nastavenie počtu cyklov (10 framov)
@@ -102,7 +53,8 @@ setxy:                       ; Podprogram na nastavenie pozície kurzora
 xcoord  DEFB 0               ; Premenná pre X súradnicu kurzora (inicializovaná na 0)
 ycoord  DEFB 15              ; Premenná pre Y súradnicu kurzora (riadok 15)
 
-ugds    DEFB    60,126,219,153 ; Dáta pre UDG znak (8 bajtov pre 8x8 pixelov)
-        DEFB    255,255,219,219 ; Druhý riadok UDG
-
+ugds   DEFB	 60,126,219,255,189,195,126, 60
+	   DEFB	 57
+	
     end ENTRY_POINT          ; Koniec programu
+    
