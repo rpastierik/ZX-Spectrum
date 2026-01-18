@@ -4,3 +4,7 @@
 *.labels
 Beginners ZX Spectrum Z80 Live/TextMover-ASCII/_Src/textmover.tap
 Beginners ZX Spectrum Z80 Live/TextMover-ASCII/_Src/tm.tap
+Beginners ZX Spectrum Z80 Live/TextMover-ASCII/_Src/psg.tap
+Beginners ZX Spectrum Z80 Live/TextMover-ASCII/_Src/psg2.tap
+Beginners ZX Spectrum Z80 Live/TextMover-ASCII/_Src/tm2.tap
+Beginners ZX Spectrum Z80 Live/TextMover-ASCII/_Src/sh.tap

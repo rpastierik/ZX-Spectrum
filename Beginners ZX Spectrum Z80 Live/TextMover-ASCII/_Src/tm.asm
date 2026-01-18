@@ -3,6 +3,9 @@ ENTRY_POINT equ 32768    ; Definice vstupního bodu na adrese 32768 (0x8000)
     org ENTRY_POINT          ; Nastavení počáteční adresy kódu
     ld a,2                   ; Nastavení kanálu 2 pro výstup
     call 0xdaf               ; Volání ROM rutiny pro vymazání obrazovky a otevření kanálu 2
+    ld a, r                  ; Načtení hodnoty z registru R
+    ld (seed), a             ; Inicializace seed náhodným číslem
+    call randomize_background ; Volání podprogramu pro nastavení náhodného pozadí
 
 forever:                     ; Nekonečná smyčka hlavního programu
     
@@ -50,9 +53,61 @@ noreset:
 
 xpos db 0                    ; Proměnná pro x-pozici kurzoru (inicializováno na 0)
 ypos db 0                    ; Proměnná pro y-pozici kurzoru (inicializováno na 0)
+seed dw 0x1234               ; Seed pro generátor náhodných čísel
 
 playersprite db  0x2a        ; Sprite hráče (smiley face '☺')
 ASCII_SPACE  equ 0x20        ; Konstanta pro ASCII mezeru
 ASCII_AT     equ 0x16        ; Konstanta pro ASCII '@' (příkaz pro nastavení pozice)
+
+get_random:                  ; Podprogram pro generování náhodného čísla
+    ld a, (seed)             ; Načtení seed
+    ld b, a                  ; Uložení do B
+    rrca                     ; Rotace doprava
+    rrca                     ; Rotace doprava
+    rrca                     ; Rotace doprava
+    xor b                    ; XOR s pôvodným
+    and 1                    ; Mask na LSB
+    ld c, a                  ; Uložení do C
+    ld a, (seed)             ; Načtení seed
+    add a, a                 ; *2
+    or c                     ; Pridanie bitu
+    ld (seed), a             ; Uložení nového seed
+    ret                      ; Návrat
+
+randomize_background:        ; Podprogram pro nastavení náhodného pozadí
+    ld d, 0                  ; Počáteční hodnota pro h
+random_outer_loop:
+    ld h, 0x58               ; Základní adresa
+    ld a, d                  ; d = 0,1,2
+    add a, h                 ; h = 0x58 + d
+    ld h, a
+    ld e, 0                  ; Vnitřní počítadlo 0-255
+random_inner_loop:
+    call get_random          ; Náhodný bajt pro l
+    ld l, a                  ; L = náhodný bajt (0-255)
+    call get_random          ; Náhodná hodnota pro ink
+    and 0x07                 ; Mask na 0-7
+    ld b, a                  ; Uložení ink
+    ld a, 0x38               ; Paper 7 (white), bright 0, flash 0
+    or b                     ; Přidání ink
+    ld (hl), a               ; Nastavenie atribútu
+    inc e                    ; Zvýšenie vnútorého počítadla
+    jr nz, random_inner_loop ; Opakuj pre 256 pozícií
+    inc d                    ; Zvýšenie d
+    ld a, d                  ; Kontrola, či d < 3
+    cp 3
+    jr nz, random_outer_loop ; Opakuj pre 3 skupiny
+    ; Nastavenie bitmapy na náhodné hodnoty pre náhodné pixely
+    ld hl, 0x4000            ; Adresa začiatku bitmapovej paměti
+    ld bc, 0x1800            ; Počet bajtů (6144 = 0x1800)
+bitmap_loop:
+    call get_random          ; Náhodná hodnota
+    ld (hl), a               ; Nastavenie náhodnej hodnoty do bitmapy
+    inc hl                   ; Posun na ďalší bajt
+    dec bc                   ; Zníženie počítadla
+    ld a, b                  ; Kontrola
+    or c
+    jr nz, bitmap_loop       ; Ak nie, pokračuj
+    ret                      ; Návrat z podprogramu
 
     end ENTRY_POINT          ; Konec programu
