@@ -3,8 +3,9 @@ ENTRY_POINT equ 32768
     org ENTRY_POINT      
 
     ld a, 71              
-    ld (23693),a          
-    xor a 
+    ld (23693),a  
+            
+    ld a,1
     call 8859
 
     ld hl,blocks
@@ -65,7 +66,7 @@ mpr:
 mpu:
     ld hl,plx
     ld a,(hl)
-    cp 4
+    cp 1
     ret z
     dec (hl)
     ret
@@ -84,7 +85,7 @@ basexy:
     ld a,(plx)
     rst 16 
     ld a,(ply)
-    rst 16          ; Pridaný chýbajúci rst 16
+    rst 16        
     ret
 
 splayr:
@@ -104,5 +105,6 @@ wspace:
 plx    DEFB 0
 ply    DEFB 0
 
-blocks: DEFB 16,16,56,56,124,124,254,254
+blocks: DEFB 189,126,219,255,189,195,102, 60
+
     end ENTRY_POINT
